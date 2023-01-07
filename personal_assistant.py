@@ -1,5 +1,6 @@
 import os
 from telethon import TelegramClient, events
+from telethon.sessions import StringSession
 
 from animations import Animations
 from modules.quotes import mQuotesMod
@@ -33,7 +34,8 @@ from modules.database import DB
 mode = False
 api_id = os.environ.get('API_ID')
 api_hash = os.environ.get('API_HASH')
-client = TelegramClient(os.environ.get('SESSION_NAME'), api_id, api_hash).start()
+session_key = os.environ.get('SESSION')
+client = TelegramClient(StringSession(session_key), api_id, api_hash).start()
 
 squote = {}
 db = DB('telehelper.json')
