@@ -1,6 +1,5 @@
 telethon
 psycopg2
-speedtest-cli
 requests
 pillow
 youtube-dl
