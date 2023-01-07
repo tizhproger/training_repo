@@ -28,6 +28,8 @@ from telethon.tl.types import PeerUser, PeerChat, PeerChannel, MessageEntityMent
 from telethon.tl.custom.message import Message
 from telethon.extensions import html
 
+from . import __main__
+
 
 def get_args(message):
     """Get arguments from message (str or Message), return list of arguments"""
