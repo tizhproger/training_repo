@@ -7,7 +7,6 @@ from modules.lovemagic import ILYMod
 from modules.notes import NotesMod
 from modules.qrcode import QRtoolsMod
 from modules.squotes import ShitQuotesMod
-from modules.spdtest import SpeedtestMod
 from modules.hostinf import InfoMod
 from modules.yesno import YesNoMod
 from modules.whois import WhoIsMod
@@ -45,7 +44,6 @@ love = ILYMod()
 note = NotesMod(client, db)
 qr = QRtoolsMod()
 squotes = ShitQuotesMod(client, squote)
-speedtest = SpeedtestMod()
 hostinfo = InfoMod()
 choice = YesNoMod()
 aniquote = AnimatedQuotesMod(client)
@@ -233,11 +231,6 @@ async def commands(message):
     if message.text.startswith('.qrr'):
         """.qrr <qrcode or reply to qrcode>"""
         await qr.readqrcmd(message)
-        return True
-    
-    if message.text.startswith('.spd'):
-        """.spd to test internet speed"""
-        await speedtest.speedtestcmd(message)
         return True
     
     if message.text.startswith('.inf'):
