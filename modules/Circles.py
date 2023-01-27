@@ -1,17 +1,17 @@
 # ---------------------------------------------------------------------------------
 #  ,_     _          
 #  |\_,-~/          
-#  / _  _ |    ,--.  🌐 This module was loaded through https://t.me/hikkamods_bot
-# (  @  @ )   / ,-'  🔓 Not licensed.
+#  / _  _ |    ,--.  рџЊђ This module was loaded through https://t.me/hikkamods_bot
+# (  @  @ )   / ,-'  рџ”“ Not licensed.
 #  \  _T_/-._( (     
-#  /         `. \    ⚠️ Owner of this bot doesn't take responsibility for any
+#  /         `. \    вљ пёЏ Owner of this bot doesn't take responsibility for any
 # |         _  \ |   errors caused by this module or this module being non-working
 #  \ \ ,  /      |   and doesn't take ownership of any copyrighted material.
 #   || |-_\__   /    
 #  ((_/`(____,-'     
 # ---------------------------------------------------------------------------------
 # Name: Circles
-# Description: Округляет всё
+# Description: РћРєСЂСѓРіР»СЏРµС‚ РІСЃС‘
 # Author: KeyZenD
 # Commands:
 # .round
@@ -34,7 +34,7 @@ def register(cb):
 
 
 class CirclesMod:
-    """округляет всё"""
+    """РѕРєСЂСѓРіР»СЏРµС‚ РІСЃС‘"""
 
     strings = {"name": "Circles"}
 
@@ -60,7 +60,7 @@ class CirclesMod:
             return
         data, type = data
         if type == "img":
-            await message.edit("**Processing image**📷")
+            await message.edit("**Processing image**рџ“·")
             img = io.BytesIO()
             bytes = await message.client.download_file(data, img)
             im = Image.open(img)
@@ -82,7 +82,7 @@ class CirclesMod:
             im.seek(0)
             await message.client.send_file(message.to_id, im, reply_to=reply)
         else:
-            await message.edit("**Processing video**🎥")
+            await message.edit("**Processing video**рџЋҐ")
             await message.client.download_file(data, "video.mp4")
             video = VideoFileClip("video.mp4")
             video.reader.close()
@@ -90,7 +90,7 @@ class CirclesMod:
             m = min(w, h)
             box = [(w - m) // 2, (h - m) // 2, (w + m) // 2, (h + m) // 2]
             video = video.crop(*box)
-            await message.edit("**Saving video**📼")
+            await message.edit("**Saving video**рџ“ј")
             video.write_videofile("result.mp4")
             await message.client.send_file(
                 message.to_id, "result.mp4", video_note=True, reply_to=reply
