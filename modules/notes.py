@@ -176,6 +176,6 @@ class NotesMod:
         if table == 'Vault':
             header = "**Vault notes:**\n\n"
         await utils.answer(message, header
-                           + "\n".join(self.strings["notes_item"].format(el['name'])
+                           + "\n".join(self.strings["notes_item"].format(el[0])
                            for el in self._db.get_all(table)).replace(' ', ''))
 
