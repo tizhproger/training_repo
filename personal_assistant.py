@@ -1,6 +1,6 @@
 import os
 from telethon import TelegramClient, events
-from telethon.sessions import StringSession
+from dotenv import load_dotenv
 
 from animations import Animations
 from modules.quotes import mQuotesMod
@@ -8,6 +8,7 @@ from modules.lovemagic import ILYMod
 from modules.notes import NotesMod
 from modules.qrcode import QRtoolsMod
 from modules.squotes import ShitQuotesMod
+from modules.spdtest import SpeedtestMod
 from modules.hostinf import InfoMod
 from modules.yesno import YesNoMod
 from modules.whois import WhoIsMod
@@ -30,15 +31,16 @@ from modules.Circles import CirclesMod
 from modules.v2a import Video2Audio
 from modules.database import DB
 
-
+load_dotenv()
 mode = False
-api_id = os.environ.get('API_ID')
-api_hash = os.environ.get('API_HASH')
-session_key = os.environ.get('SESSION')
-client = TelegramClient(StringSession(session_key), api_id, api_hash).start()
+api_id = os.getenv('API_ID')
+api_hash = os.getenv('API_HASH')
+client = TelegramClient(os.getenv('SESSION_NAME'), api_id, api_hash).start()
+print("Bot started...")
 
 squote = {}
-db = DB('telehelper.json')
+db = DB('telehelper.db')
+print("Database loaded...")
 
 animate = Animations(client)
 quotes = mQuotesMod(client)
@@ -46,6 +48,7 @@ love = ILYMod()
 note = NotesMod(client, db)
 qr = QRtoolsMod()
 squotes = ShitQuotesMod(client, squote)
+speedtest = SpeedtestMod()
 hostinfo = InfoMod()
 choice = YesNoMod()
 aniquote = AnimatedQuotesMod(client)
@@ -65,6 +68,7 @@ typer = TyperMod()
 inst = Instload()
 circle = CirclesMod()
 vids = Video2Audio(client)
+print("Modules loaded...")
 
 banwords = db.getwords()
 arguments_msg = '**Set correct argument!**'
@@ -72,6 +76,34 @@ arguments_msg = '**Set correct argument!**'
 async def commands(message):
     global banwords, inst
     params = message.text.split()
+
+    if message.text.startswith('.shutup'):
+        if message.is_reply or ('@' in message.text):
+            if message.is_reply:
+                usr_id = (await message.get_reply_message()).sender.id
+                await message.edit('А теперь, помолчи!')
+            else:
+                usr_id = await message.client.get_entity(int(message.text) if message.text.isdigit() else params[1])
+                await message.edit('А теперь, помолчи ' + params[1])
+            print(f"User is muted: {usr_id}")
+            db.mute_user(usr_id.id if not message.is_reply else usr_id, message.chat_id)
+            return True
+        await message.edit('Works with reply or tag!')
+        return True
+
+    if message.text.startswith('.speak'):
+        if message.is_reply or ('@' in message.text):
+            if message.is_reply:
+                usr_id = (await message.get_reply_message()).sender.id
+                await message.edit('Ты свободен!')
+            else:
+                usr_id = await message.client.get_entity(int(message.text) if message.text.isdigit() else params[1])
+                await message.edit('Ты свободен, ' + params[1])
+            print(f"User is unmuted: {usr_id}")
+            db.unmute_user(usr_id.id if not message.is_reply else usr_id, message.chat_id)
+            return True
+        await message.edit('Works with reply or tag!')
+        return True
     
     if message.text.startswith('.inst'):
         if len(params) > 1:
@@ -103,7 +135,6 @@ async def commands(message):
                         await client.send_file(message.chat_id, link, caption=f"[Profile link](https://instagram.com/{params[1]})")
                     await message.delete()
                     return True
-            
         await message.edit('**Specify correct insta data!**')
    
     if message.text.startswith('.chatmodes'):
@@ -233,6 +264,11 @@ async def commands(message):
     if message.text.startswith('.qrr'):
         """.qrr <qrcode or reply to qrcode>"""
         await qr.readqrcmd(message)
+        return True
+    
+    if message.text.startswith('.spd'):
+        """.spd to test internet speed"""
+        await speedtest.speedtestcmd(message)
         return True
     
     if message.text.startswith('.inf'):
@@ -716,6 +752,9 @@ async def outgoing(event):
 
 @client.on(events.NewMessage(incoming=True))
 async def incoming(event):
+    if db.check_mute(event.message.sender_id, event.message.chat_id):
+        await event.message.delete()
+
     if db.checkchat(event.message.chat_id):
         if db.checkmode(event.message.chat_id, 'nopolitics'):
             for el in banwords:
@@ -747,5 +786,5 @@ async def incoming(event):
             if not res:
                 await reply.delete()
                 await event.message.reply('**Команда не найдена...**')
-
+print("Listening started...")
 client.run_until_disconnected()
